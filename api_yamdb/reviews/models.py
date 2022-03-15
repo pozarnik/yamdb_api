@@ -1,8 +1,5 @@
-from django.contrib.auth import get_user_model
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
-
-User = get_user_model()
 
 
 class Category(models.Model):  # Категория
@@ -23,7 +20,7 @@ class Title(models.Model):  # Произведение/фильм/песня
             MaxValueValidator(2022)
         ]
     )
-    description = models.TextField()
+    description = models.TextField(blank=True)
     genre = models.ForeignKey(
         Genre,
         related_name='titles',
