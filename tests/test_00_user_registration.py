@@ -85,7 +85,7 @@ class Test00UserRegistration:
         }
         request_type = 'POST'
         response = client.post(self.url_signup, data=valid_data)
-        outbox_after = mail.outbox  # email outbox after user create
+        outbox_after = mail.outbox  # email outbox after users create
 
         assert response.status_code != 404, (
             f'Страница `{self.url_signup}` не найдена, проверьте этот адрес в *urls.py*'
@@ -156,7 +156,7 @@ class Test00UserRegistration:
             f'от имени администратора, в БД создается пользователь и возвращается статус {code}'
         )
 
-        # Test confirmation code not sent to user after admin registers him
+        # Test confirmation code not sent to users after admin registers him
         assert len(outbox_after) == outbox_before_count, (
             f'Проверьте, что при {request_type} запросе `{self.url_admin_create_user}` с валидными данными '
             f'от имени администратора, пользователю НЕ приходит email с кодом подтверждения'

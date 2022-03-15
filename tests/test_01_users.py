@@ -137,7 +137,7 @@ class Test01UserAPI:
         )
         no_email_data = {
             'username': 'TestUser_noemail',
-            'role': 'user'
+            'role': 'users'
         }
         response = admin_client.post('/api/v1/users/', data=no_email_data)
         assert response.status_code == 400, (
@@ -146,7 +146,7 @@ class Test01UserAPI:
         valid_email = 'valid_email@yamdb.fake'
         no_username_data = {
             'email': valid_email,
-            'role': 'user'
+            'role': 'users'
         }
         response = admin_client.post('/api/v1/users/', data=no_username_data)
         assert response.status_code == 400, (
@@ -154,7 +154,7 @@ class Test01UserAPI:
         )
         duplicate_email = {
             'username': 'TestUser_duplicate',
-            'role': 'user',
+            'role': 'users',
             'email': admin.email
         }
         response = admin_client.post('/api/v1/users/', data=duplicate_email)
@@ -164,7 +164,7 @@ class Test01UserAPI:
         )
         duplicate_username = {
             'username': admin.username,
-            'role': 'user',
+            'role': 'users',
             'email': valid_email
         }
         response = admin_client.post('/api/v1/users/', data=duplicate_username)
@@ -174,7 +174,7 @@ class Test01UserAPI:
         )
         data = {
             'username': admin.username,
-            'role': 'user',
+            'role': 'users',
             'email': 'testuser@yamdb.fake'
         }
         response = admin_client.post('/api/v1/users/', data=data)
@@ -184,7 +184,7 @@ class Test01UserAPI:
         )
         valid_data = {
             'username': 'TestUser_2',
-            'role': 'user',
+            'role': 'users',
             'email': 'testuser2@yamdb.fake'
         }
         response = admin_client.post('/api/v1/users/', data=valid_data)
@@ -198,11 +198,11 @@ class Test01UserAPI:
         response = admin_client.post('/api/v1/users/', data=valid_data)
         assert response.status_code == 201, (
             'Проверьте, что при POST запросе `/api/v1/users/`, при создании пользователя без указания роли, '
-            'по умолчанию выдается роль user и возвращается статус 201.'
+            'по умолчанию выдается роль users и возвращается статус 201.'
         )
-        assert response.json().get('role') == 'user', (
+        assert response.json().get('role') == 'users', (
             'Проверьте, что при POST запросе `/api/v1/users/`, при создании пользователя без указания роли, '
-            'по умолчанию выдается роль user и возвращается статус 201.'
+            'по умолчанию выдается роль users и возвращается статус 201.'
         )
         data = {
             'first_name': 'First Name',
@@ -253,7 +253,7 @@ class Test01UserAPI:
         users_before = users.count()
         valid_data = {
             'username': 'TestUser_3',
-            'role': 'user',
+            'role': 'users',
             'email': 'testuser3@yamdb.fake'
         }
         response = user_superuser_client.post('/api/v1/users/', data=valid_data)
@@ -358,7 +358,7 @@ class Test01UserAPI:
         data = {
             'first_name': 'New USer Firstname',
             'last_name': 'New USer Lastname',
-            'bio': 'new user bio'
+            'bio': 'new users bio'
         }
         response = moderator_client.patch(f'/api/v1/users/{user.username}/', data=data)
         assert response.status_code == 403, (
@@ -371,12 +371,12 @@ class Test01UserAPI:
         data = {
             'first_name': 'New USer Firstname',
             'last_name': 'New USer Lastname',
-            'bio': 'new user bio'
+            'bio': 'new users bio'
         }
         response = user_client.patch(f'/api/v1/users/{user.username}/', data=data)
         assert response.status_code == 403, (
             'Проверьте, что при PATCH запросе `/api/v1/users/{username}/` '
-            'пользователь с ролью user не может изменять данные других пользователей'
+            'пользователь с ролью users не может изменять данные других пользователей'
         )
 
     @pytest.mark.django_db(transaction=True)
@@ -384,7 +384,7 @@ class Test01UserAPI:
         data = {
             'first_name': 'New USer Firstname',
             'last_name': 'New USer Lastname',
-            'bio': 'new user bio'
+            'bio': 'new users bio'
         }
         response = user_client.put(f'/api/v1/users/{user.username}/', data=data)
         code = 403
@@ -453,7 +453,7 @@ class Test01UserAPI:
         )
         data = {
             'username': 'TestUser9876',
-            'role': 'user',
+            'role': 'users',
             'email': 'testuser9876@yamdb.fake'
         }
         response = client_user.post('/api/v1/users/', data=data)
@@ -552,14 +552,14 @@ class Test01UserAPI:
     @pytest.mark.django_db(transaction=True)
     def test_11_02_users_me_patch_user(self, user_client):
         data = {
-            'first_name': 'New user first name',
-            'last_name': 'New user last name',
-            'bio': 'new user bio',
+            'first_name': 'New users first name',
+            'last_name': 'New users last name',
+            'bio': 'new users bio',
         }
         response = user_client.patch('/api/v1/users/me/', data=data)
         assert response.status_code == 200, (
             'Проверьте, что при PATCH запросе `/api/v1/users/me/`, '
-            'пользователь с ролью user может изменить свои данные, и возвращается статус 200'
+            'пользователь с ролью users может изменить свои данные, и возвращается статус 200'
         )
 
         data = {
@@ -567,7 +567,7 @@ class Test01UserAPI:
         }
         response = user_client.patch('/api/v1/users/me/', data=data)
         response_json = response.json()
-        assert response_json.get('role') == 'user', (
+        assert response_json.get('role') == 'users', (
             'Проверьте, что при PATCH запросе `/api/v1/users/me/`, '
-            'пользователь с ролью user не может сменить себе роль'
+            'пользователь с ролью users не может сменить себе роль'
         )
