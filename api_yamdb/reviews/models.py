@@ -1,33 +1,44 @@
-from django.db import models
 from django.contrib.auth import get_user_model
+from django.core.validators import MaxValueValidator, MinValueValidator
+from django.db import models
 
 User = get_user_model()
 
-class Category(models.Model):  #Категория
+
+class Category(models.Model):  # Категория
     name = models.CharField(max_length=256)
     slug = models.SlugField(unique=True, max_length=50)
 
-class Genre(models.Model):    #Жанр
+
+class Genre(models.Model):  # Жанр
     name = models.CharField(max_length=256)
     slug = models.SlugField(unique=True, max_length=50)
 
 
-class Title(models.Model):    #Произведение/фильм/песня
+class Title(models.Model):  # Произведение/фильм/песня
     name = models.TextField()
-    year = models.IntegerField()
-    description = models.CharField(null=True,)
+    year = models.IntegerField(
+        validators=[
+            MinValueValidator(0),
+            MaxValueValidator(2022)
+        ]
+    )
+    description = models.TextField()
     genre = models.ForeignKey(
         Genre,
         related_name='titles',
-        on_delete=models.SET_NULL
+        on_delete=models.SET_NULL,
+        null=True
     )
     category = models.ForeignKey(
         Category,
         related_name='titles',
-        on_delete=models.SET_NULL
+        on_delete=models.SET_NULL,
+        null=True
     )
 
-class Review(models.Model):   # Отзыв
+
+class Review(models.Model):  # Отзыв
     text = models.TextField()
     title = models.ForeignKey(
         Title,
@@ -39,7 +50,12 @@ class Review(models.Model):   # Отзыв
         on_delete=models.CASCADE,
         related_name='reviews'
     )
-    score = models.IntegerField()
+    score = models.IntegerField(
+        validators=[
+            MinValueValidator(0),
+            MaxValueValidator(10)
+        ]
+    )
     pub_date = models.DateTimeField(auto_now_add=True)
 
 
@@ -56,5 +72,3 @@ class Comment(models.Model):  # Коммент
         on_delete=models.CASCADE,
         related_name='comments'
     )
-
-
