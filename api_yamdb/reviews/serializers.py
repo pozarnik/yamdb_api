@@ -15,6 +15,7 @@ class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
         fields = '__all__'
+        unique_together = ('slug',)
 
 
 class GenreSerializer(serializers.ModelSerializer):
@@ -30,6 +31,7 @@ class GenreSerializer(serializers.ModelSerializer):
     class Meta:
         model = Genre
         fields = '__all__'
+        unique_together = ('slug',)
 
 
 class TitleSerializer(serializers.ModelSerializer):
