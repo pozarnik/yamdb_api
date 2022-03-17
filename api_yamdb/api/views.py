@@ -1,12 +1,32 @@
-from django.shortcuts import render
-from rest_framework import viewsets
 from rest_framework import filters
 from rest_framework import mixins
 from rest_framework import permissions
-from .models import Category, Genre, Title, Review, Comment
-from .serializers import *
-from .permissions import IsAdminOrReadOnly
+from rest_framework import viewsets
 from rest_framework.pagination import LimitOffsetPagination
+
+from reviews.models import User, Category, Genre, Title, Review, Comment
+from .permissions import IsAdminOrReadOnly
+from .serializers import UserSerializer, CurrentUserSerializer, CategorySerializer, GenreSerializer, TitleSerializer, \
+    ReviewSerializer, CommentSerializer
+
+
+class UserViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = [permissions.IsAdminUser]
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ('user__username',)
+    pagination_class = LimitOffsetPagination
+    lookup_field = 'username'
+
+
+class CurrentUserViewSet(viewsets.ModelViewSet):
+    serializer_class = CurrentUserSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        queryset = User.objects.get(username=self.request.user)
+        return queryset
 
 
 class CategoryViewSet(mixins.ListModelMixin,
