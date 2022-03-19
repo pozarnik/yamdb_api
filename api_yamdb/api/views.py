@@ -1,6 +1,7 @@
 from random import randint
 
 from django.contrib.auth.tokens import default_token_generator
+from rest_framework_simplejwt.tokens import AccessToken
 from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
@@ -56,40 +57,40 @@ class TokenAPIView(APIView):
         if user.activation_code == activation_code:
             user.is_active = True
             user.save()
-            token = default_token_generator.make_token(user)
+            token = AccessToken.for_user(user)
             return Response({"token": token}, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class UsersViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.CreateModelMixin, viewsets.GenericViewSet):
-    queryset = User.objects.all()
+class UsersAPIView(SignupAPIView):
     serializer_class = serializers.UsersSerializer
-    permission_classes = [permissions.IsAdminUser]
+    filter_backends = (filters.SearchFilter,)
     search_fields = ('user__username',)
     lookup_field = 'username'
+    pagination_class = LimitOffsetPagination
 
-    def perform_create(self, serializer):
-        activation_code = randint(1000000, 9999999)
-        user_email = serializer.data['email']
-        send_mail(
-            'Активация учетной записи',
-            f'Код активации {activation_code}.',
-            'from@example.com',
-            [user_email],
-            fail_silently=False,
-        )
-        serializer.save(activation_code=activation_code, is_active=False)
+    def get(self, request):
+        users = User.objects.all()
+        serializer = self.serializer_class(users, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-class UserViewSet(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, mixins.DestroyModelMixin,
-                  viewsets.GenericViewSet):
+class UserAPIView(APIView):
     serializer_class = serializers.UserSerializer
-    permission_classes = [permissions.IsAdminUser]
+    # permission_classes = [permissions.IsAdminUser]
 
-    def get_queryset(self):
-        username = self.kwargs.get("username")
+    def get(self, request, username):
         user = get_object_or_404(User, username=username)
-        return user
+        serializer = self.serializer_class(user)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def patch(self, request, username):
+        ...
+
+    def delete(self, request, username):
+        user = get_object_or_404(User, username=username)
+        user.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class MeViewSet(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, viewsets.GenericViewSet):

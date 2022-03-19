@@ -1,11 +1,21 @@
 from rest_framework import serializers
 
 from reviews.models import User, Category, Genre, Title, Review, Comment
+from rest_framework.validators import UniqueValidator
 
 
 class SignupSerializer(serializers.ModelSerializer):
-    username = serializers.CharField()
-    email = serializers.EmailField()
+    username = serializers.CharField(
+        validators=[
+            UniqueValidator(queryset=User.objects.all())
+        ],
+        required=True,
+    )
+    email = serializers.EmailField(
+        validators=[
+            UniqueValidator(queryset=User.objects.all())
+        ]
+    )
 
     class Meta:
         model = User
@@ -29,19 +39,9 @@ class TokenSerializer(serializers.ModelSerializer):
 
 
 class UsersSerializer(serializers.ModelSerializer):
-    username = serializers.SlugRelatedField(
-        slug_field='username',
-        queryset=User.objects.all()
-    )
-    email = serializers.SlugRelatedField(
-        slug_field='email',
-        queryset=User.objects.all()
-    )
-
     class Meta:
         model = User
-        fields = '__all__'
-        exclude = 'id'
+        fields = ('username', 'email', 'first_name', 'last_name', 'bio', 'role')
 
     def validate_username(self, value):
         if value == 'me':
@@ -50,15 +50,10 @@ class UsersSerializer(serializers.ModelSerializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
-    username = serializers.SlugRelatedField(
-        slug_field='username',
-        queryset=User.objects.all()
-    )
 
     class Meta:
         model = User
-        fields = '__all__'
-        exclude = 'id'
+        fields = ('username', 'email', 'first_name', 'last_name', 'bio', 'role')
         unique_together = ('username', 'email')
 
 
