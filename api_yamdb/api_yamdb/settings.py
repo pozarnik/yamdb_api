@@ -2,7 +2,6 @@ import os
 from datetime import timedelta
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-import rest_framework.permissions
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -24,7 +23,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'djoser',
     'django_filters',
     'reviews.apps.ReviewsConfig',
     'api.apps.ApiConfig',
@@ -115,19 +113,9 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.AllowAny',
     ],
-
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ],
-}
-DJOSER = {
-    'ACTIVATION_URL': '#/activate/{uid}/{token}',
-    'SEND_ACTIVATION_EMAIL': True,
-    "SERIALIZERS": {
-        'activation': 'djoser.serializers.ActivationSerializer',
-        "user": "account.serializers.user_serializer.CustomUserSerializer",
-        "user_create_password_retype": "account.serializers.user_serializer.UserCreatePasswordRetypeSerializer",
-    }
 }
 
 SIMPLE_JWT = {
