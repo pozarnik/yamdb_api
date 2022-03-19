@@ -13,7 +13,6 @@ class User(AbstractUser):
     email = models.EmailField(max_length=254, unique=True)
     bio = models.TextField(null=True)
     role = models.CharField(max_length=10, choices=ROLE_CHOICES, default='user')
-    activation_code = models.CharField(max_length=7, null=True)
 
     @property
     def is_moderator(self):
@@ -21,7 +20,7 @@ class User(AbstractUser):
 
     @property
     def is_admin(self):
-        return self.role == 'admin'
+        return self.role == 'admin' or self.is_superuser
 
     def __str__(self):
         return self.username

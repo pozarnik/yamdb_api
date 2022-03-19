@@ -1,7 +1,7 @@
 from rest_framework import serializers
+from rest_framework.validators import UniqueValidator
 
 from reviews.models import User, Category, Genre, Title, Review, Comment
-from rest_framework.validators import UniqueValidator
 
 
 class SignupSerializer(serializers.ModelSerializer):
@@ -28,66 +28,44 @@ class SignupSerializer(serializers.ModelSerializer):
 
 
 class TokenSerializer(serializers.ModelSerializer):
-    username = serializers.SlugRelatedField(
-        slug_field='username',
-        queryset=User.objects.all()
-    )
     confirmation_code = serializers.CharField(max_length=255, read_only=True)
 
     class Meta:
-        fields = ('username', 'confirmation_code', 'token')
+        model = User
+        fields = ('username', 'confirmation_code')
 
 
-class UsersSerializer(serializers.ModelSerializer):
+class UsersSerializer(SignupSerializer):
     class Meta:
         model = User
         fields = ('username', 'email', 'first_name', 'last_name', 'bio', 'role')
 
-    def validate_username(self, value):
-        if value == 'me':
-            raise serializers.ValidationError('Нельзя использовать имя <me>!')
-        return value
 
-
-class UserSerializer(serializers.ModelSerializer):
-
+class UserSerializer(SignupSerializer):
     class Meta:
         model = User
         fields = ('username', 'email', 'first_name', 'last_name', 'bio', 'role')
         unique_together = ('username', 'email')
 
 
-class MeSerializer(serializers.ModelSerializer):
+class MeSerializer(SignupSerializer):
     class Meta:
         model = User
-        fields = '__all__'
-        exclude = 'id'
+        fields = ('username', 'email', 'first_name', 'last_name', 'bio', 'role')
         read_only_fields = ('role',)
 
 
 class CategorySerializer(serializers.ModelSerializer):
-    slug = serializers.SlugRelatedField(
-        slug_field='slug',
-        queryset=Category.objects.all()
-    )
-
     class Meta:
         model = Category
-        fields = ('name', 'slug')
-        exclude = 'id'
+        exclude = ('id',)
         unique_together = ('slug',)
 
 
 class GenreSerializer(serializers.ModelSerializer):
-    slug = serializers.SlugRelatedField(
-        slug_field='slug',
-        queryset=Category.objects.all()
-    )
-
     class Meta:
         model = Genre
-        fields = ('name', 'slug')
-        exclude = 'id'
+        exclude = ('id',)
         unique_together = ('slug',)
 
 
