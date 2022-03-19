@@ -11,7 +11,7 @@ class User(AbstractUser):
     )
     username = models.CharField(max_length=150, unique=True, db_index=True)
     email = models.EmailField(max_length=254, unique=True)
-    bio = models.TextField(blank=True, null=True)
+    bio = models.TextField(null=True)
     role = models.CharField(max_length=10, choices=ROLE_CHOICES, default='user')
     activation_code = models.CharField(max_length=7, null=True)
 

@@ -7,48 +7,58 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters
 from rest_framework import mixins
 from rest_framework import permissions
+from rest_framework import status
 from rest_framework import viewsets
 from rest_framework.pagination import LimitOffsetPagination
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from reviews.models import User, Category, Genre, Title, Review
 from . import serializers
 from .permissions import IsAdminOrReadOnly, IsAuthorOrReadOnly
 
 
-class SignupViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
-    queryset = User.objects.all()
+class SignupAPIView(APIView):
     serializer_class = serializers.SignupSerializer
 
-    # def perform_create(self, serializer):
-    #     serializer.save()
-    #     activation_code = randint(1000000, 9999999)
-    #     user_email = serializer.validated_data['email']
-    #     username = serializer.validated_data['username']
-    #     send_mail(
-    #         'Активация учетной записи',
-    #         f'Код активации {activation_code}.',
-    #         'from@example.com',
-    #         [user_email],
-    #         fail_silently=False,
-    #     )
-    #     user = User.objects.get(username=username)
-    #     user.activation_code = activation_code
-    #     user.is_active = False
-    #     user.save()
+    def post(self, request):
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        username = serializer.validated_data['username']
+        user_email = serializer.validated_data['email']
+        user = get_object_or_404(
+            User,
+            username=username
+        )
+        activation_code = randint(1000000, 9999999)
+        send_mail(
+            f'Активация учетной записи {username}',
+            f'Код активации {activation_code}.',
+            'from@example.com',
+            [user_email],
+            fail_silently=False,
+        )
+        user.activation_code = activation_code
+        user.is_active = False
+        user.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-class TokenViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
-    queryset = User.objects.all()
+class TokenAPIView(APIView):
     serializer_class = serializers.TokenSerializer
 
-    def perform_create(self, serializer):
-        username = serializer.data['username']
+    def post(self, request):
+        serializer = self.serializer_class(data=request.data)
+        username = serializer.initial_data['username']
         user = get_object_or_404(User, username=username)
-        activation_code = serializer.data['activation_code']
+        activation_code = serializer.initial_data['activation_code']
         if user.activation_code == activation_code:
             user.is_active = True
+            user.save()
             token = default_token_generator.make_token(user)
-            return {"token": token}
+            return Response({"token": token}, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class UsersViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.CreateModelMixin, viewsets.GenericViewSet):
