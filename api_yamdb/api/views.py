@@ -51,9 +51,10 @@ class TokenAPIView(APIView):
 
     def post(self, request):
         serializer = self.serializer_class(data=request.data)
-        username = serializer.initial_data['username']
+        serializer.is_valid(raise_exception=True)
+        username = serializer.validated_data['username']
         user = get_object_or_404(User, username=username)
-        activation_code = serializer.initial_data['activation_code']
+        activation_code = serializer.validated_data['activation_code']
         if user.activation_code == activation_code:
             user.is_active = True
             user.save()
@@ -85,7 +86,15 @@ class UserAPIView(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def patch(self, request, username):
-        ...
+        user = get_object_or_404(User, username=username)
+        serializer = self.serializer_class(
+            user,
+            data=request.data,
+            partial=True
+        )
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     def delete(self, request, username):
         user = get_object_or_404(User, username=username)
