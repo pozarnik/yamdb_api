@@ -41,11 +41,6 @@ class UsersSerializer(SignupSerializer):
         fields = ('username', 'email', 'first_name', 'last_name', 'bio', 'role')
 
 
-class UserSerializer(SignupSerializer):
-    class Meta:
-        model = User
-        fields = ('username', 'email', 'first_name', 'last_name', 'bio', 'role')
-        unique_together = ('username', 'email')
 
 
 class MeSerializer(SignupSerializer):

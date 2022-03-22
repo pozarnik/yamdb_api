@@ -54,49 +54,16 @@ class TokenAPIView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class UsersAPIView(APIView):
+class UsersViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.all()
     serializer_class = serializers.UsersSerializer
     permission_classes = [IsAdmin]
     filter_backends = (filters.SearchFilter,)
-    search_fields = ('user__username',)
+    search_fields = ('username',)
     lookup_field = 'username'
-    pagination_class = LimitOffsetPagination
-
-    def get(self, request):
-        users = User.objects.all()
-        serializer = self.serializer_class(users, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-    def post(self, request):
-        serializer = self.serializer_class(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    # pagination_class = LimitOffsetPagination
 
 
-class UserAPIView(APIView):
-    serializer_class = serializers.UserSerializer
-    permission_classes = [IsAdmin]
-
-    def get(self, request, username):
-        user = get_object_or_404(User, username=username)
-        serializer = self.serializer_class(user)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-    def patch(self, request, username):
-        user = get_object_or_404(User, username=username)
-        serializer = self.serializer_class(
-            user,
-            data=request.data,
-            partial=True
-        )
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-    def delete(self, request, username):
-        user = get_object_or_404(User, username=username)
-        user.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class MeAPIView(APIView):
@@ -129,7 +96,7 @@ class CategoryViewSet(mixins.ListModelMixin,
     permission_classes = [IsAdminOrReadOnly]
     filter_backends = (filters.SearchFilter,)
     search_fields = ('category__name',)
-    pagination_class = LimitOffsetPagination
+    # pagination_class = LimitOffsetPagination
 
 
 class GenreViewSet(CategoryViewSet):

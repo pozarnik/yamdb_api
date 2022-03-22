@@ -5,14 +5,14 @@ from django.db import models
 
 class User(AbstractUser):
     ROLE_CHOICES = (
-        ('user', 'user'),
+        ('users', 'users'),
         ('moderator', 'moderator'),
         ('admin', 'admin'),
     )
     username = models.CharField(max_length=150, unique=True, db_index=True)
     email = models.EmailField(max_length=254, unique=True)
     bio = models.TextField(null=True)
-    role = models.CharField(max_length=10, choices=ROLE_CHOICES, default='user')
+    role = models.CharField(max_length=10, choices=ROLE_CHOICES, default='users')
 
     @property
     def is_moderator(self):
