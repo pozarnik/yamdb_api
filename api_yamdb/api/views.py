@@ -11,6 +11,7 @@ from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import AccessToken
+from rest_framework.exceptions import ValidationError
 
 from reviews.models import User, Category, Genre, Title, Review
 from . import serializers
@@ -64,8 +65,6 @@ class UsersViewSet(viewsets.ModelViewSet):
     # pagination_class = LimitOffsetPagination
 
 
-
-
 class MeAPIView(APIView):
     serializer_class = serializers.MeSerializer
     permission_classes = [permissions.IsAuthenticated]
@@ -95,32 +94,34 @@ class CategoryViewSet(mixins.ListModelMixin,
     serializer_class = serializers.CategorySerializer
     permission_classes = [IsAdminOrReadOnly]
     filter_backends = (filters.SearchFilter,)
-    search_fields = ('category__name',)
+    search_fields = ('name',)
+    lookup_field = 'slug'
     # pagination_class = LimitOffsetPagination
 
 
 class GenreViewSet(CategoryViewSet):
     queryset = Genre.objects.all()
     serializer_class = serializers.GenreSerializer
-    search_fields = ('genre__name',)
+    search_fields = ('name',)
 
 
 class TitleViewSet(viewsets.ModelViewSet):
     queryset = Title.objects.all()
-    serializer_class = serializers.TitleSerializer
     permission_classes = [IsAdminOrReadOnly]
     filter_backends = (DjangoFilterBackend, filters.SearchFilter)
     filterset_fields = ('category__slug', 'genre__slug', 'name', 'year')
     pagination_class = LimitOffsetPagination
 
-    def perform_create(self, serializer):
-        serializer.save(author=self.request.user)
+    def get_serializer_class(self):
+        if self.action in ('create', 'partial_update'):
+            return serializers.TitleCreateSerializer
+        return serializers.TitleSerializer
 
 
 class ReviewViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.ReviewSerializer
     permission_classes = [IsAuthorOrReadOnly]
-    pagination_class = LimitOffsetPagination
+    # pagination_class = LimitOffsetPagination
 
     def get_queryset(self):
         title_id = self.kwargs.get("title_id")
@@ -131,7 +132,8 @@ class ReviewViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         title_id = self.kwargs.get("title_id")
         title = get_object_or_404(Title, id=title_id)
-        serializer.save(author=self.request.user, title=title)
+        user = self.request.user
+        serializer.save(author=user, title=title)
 
 
 class CommentViewSet(viewsets.ModelViewSet):
