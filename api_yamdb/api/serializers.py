@@ -65,14 +65,7 @@ class GenreSerializer(serializers.ModelSerializer):
         unique_together = ('slug',)
 
 
-class ReviewSerializer(serializers.ModelSerializer):
-    author = serializers.StringRelatedField(
-        read_only=True, default=serializers.CurrentUserDefault())
 
-    class Meta:
-        model = Review
-        fields = '__all__'
-        read_only_fields = ('pub_date', 'title')
 
 class TitleSerializer(serializers.ModelSerializer):
     category = CategorySerializer()
@@ -107,6 +100,14 @@ class TitleCreateSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class ReviewSerializer(serializers.ModelSerializer):
+    author = serializers.StringRelatedField(
+        read_only=True, default=serializers.CurrentUserDefault())
+
+    class Meta:
+        model = Review
+        fields = '__all__'
+        read_only_fields = ('pub_date', 'title')
 
 
 class CommentSerializer(serializers.ModelSerializer):

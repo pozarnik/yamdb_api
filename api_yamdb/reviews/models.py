@@ -88,13 +88,13 @@ class Review(models.Model):  # Отзыв
     )
     pub_date = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+        constraints = [models.UniqueConstraint(fields=['title', 'author'], name='unique') ]
+
     def __str__(self):
         return self.text
 
-    # def save(self, *args, **kwargs):
-    #     if Review.objects.filter(author=self.author, title=self.title, text=self.text).exists():
-    #         raise PermissionError("Updating the value of creator isn't allowed")
-    #     super().save(*args, **kwargs)
+
 
 
 
