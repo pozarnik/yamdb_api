@@ -4,6 +4,7 @@ from django.db import models
 
 
 class User(AbstractUser):
+    """Содержит пользователей"""
     ROLE_CHOICES = (
         ('users', 'users'),
         ('moderator', 'moderator'),
@@ -14,9 +15,9 @@ class User(AbstractUser):
     bio = models.TextField(verbose_name='биография', null=True)
     role = models.CharField(verbose_name='роль', max_length=10, choices=ROLE_CHOICES, default='users')
 
-    def get_role(self):
+    def get_role(self, obj):
         if self.is_superuser:
-            return self.role == 'admin'
+            return obj.role == 'admin'
 
     @property
     def is_moderator(self):
@@ -36,6 +37,7 @@ class User(AbstractUser):
 
 
 class Category(models.Model):
+    """Содержит категории произведений"""
     name = models.CharField(verbose_name='название категории', max_length=256)
     slug = models.SlugField(verbose_name='сокращение категории', unique=True, max_length=50)
 
@@ -49,6 +51,7 @@ class Category(models.Model):
 
 
 class Genre(models.Model):
+    """Содержит жанры произведений"""
     name = models.CharField(verbose_name='название жанра', max_length=256)
     slug = models.SlugField(verbose_name='сокращение жанра', unique=True, max_length=50)
 
@@ -62,8 +65,9 @@ class Genre(models.Model):
 
 
 class Title(models.Model):
+    """Содержит произведения"""
     name = models.TextField(verbose_name='произведение')
-    year = models.IntegerField(
+    year = models.PositiveSmallIntegerField(
         validators=[
             MinValueValidator(0),
             MaxValueValidator(2022)
@@ -95,6 +99,7 @@ class Title(models.Model):
 
 
 class Review(models.Model):
+    """Содержит обзоры на произведения"""
     text = models.TextField(verbose_name='текст отзыва')
     title = models.ForeignKey(
         Title,
@@ -108,7 +113,7 @@ class Review(models.Model):
         related_name='reviews',
         verbose_name='автор отзыва'
     )
-    score = models.IntegerField(
+    score = models.PositiveSmallIntegerField(
         validators=[
             MinValueValidator(0),
             MaxValueValidator(10)
@@ -128,6 +133,7 @@ class Review(models.Model):
 
 
 class Comment(models.Model):
+    """Содержит комментарии к отзывам"""
     text = models.TextField(verbose_name='текст комментария')
     author = models.ForeignKey(
         User,

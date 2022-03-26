@@ -7,19 +7,19 @@ from rest_framework import mixins
 from rest_framework import permissions
 from rest_framework import status
 from rest_framework import viewsets
-from rest_framework.pagination import LimitOffsetPagination
+from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import AccessToken
-from rest_framework.exceptions import ValidationError
 
 from reviews.models import User, Category, Genre, Title, Review
 from . import serializers
-from .permissions import IsAdmin, IsAdminOrReadOnly, IsAuthorOrStaffOrReadOnly
 from .filters import TitleFilter
+from .permissions import IsAdmin, IsAdminOrReadOnly, IsAuthorOrStaffOrReadOnly
 
 
 class SignupAPIView(APIView):
+    """Создает пользователя"""
     serializer_class = serializers.SignupSerializer
 
     def post(self, request):
@@ -27,10 +27,7 @@ class SignupAPIView(APIView):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         username, user_email = serializer.validated_data['username'], serializer.validated_data['email']
-        user = get_object_or_404(
-            User,
-            username=username
-        )
+        user = get_object_or_404(User, username=username)
         confirmation_code = default_token_generator.make_token(user)
         send_mail(
             f'Активация учетной записи {username}',
@@ -43,6 +40,7 @@ class SignupAPIView(APIView):
 
 
 class TokenAPIView(APIView):
+    """Получение токена пользователем"""
     serializer_class = serializers.TokenSerializer
 
     def post(self, request):
@@ -57,6 +55,7 @@ class TokenAPIView(APIView):
 
 
 class UsersViewSet(viewsets.ModelViewSet):
+    """Отображение всех пользователей"""
     queryset = User.objects.all()
     serializer_class = serializers.UsersSerializer
     permission_classes = [IsAdmin]
@@ -66,6 +65,7 @@ class UsersViewSet(viewsets.ModelViewSet):
 
 
 class MeAPIView(APIView):
+    """Отображение профиля текущего пользователя"""
     serializer_class = serializers.MeSerializer
     permission_classes = [permissions.IsAuthenticated]
 
@@ -90,6 +90,7 @@ class CategoryViewSet(mixins.ListModelMixin,
                       mixins.CreateModelMixin,
                       mixins.DestroyModelMixin,
                       viewsets.GenericViewSet):
+    """Просмотр, создание и удаление категорий"""
     queryset = Category.objects.all()
     serializer_class = serializers.CategorySerializer
     permission_classes = [IsAdminOrReadOnly]
@@ -99,16 +100,18 @@ class CategoryViewSet(mixins.ListModelMixin,
 
 
 class GenreViewSet(CategoryViewSet):
+    """Просмотр, создание и удаление жанров"""
     queryset = Genre.objects.all()
     serializer_class = serializers.GenreSerializer
     search_fields = ('name',)
 
 
 class TitleViewSet(viewsets.ModelViewSet):
+    """Просмотр, создание, обновление и удаление произведений"""
     queryset = Title.objects.all()
     permission_classes = [IsAdminOrReadOnly]
     filter_backends = (DjangoFilterBackend,)
-    filterset_class  = TitleFilter
+    filterset_class = TitleFilter
 
     def get_serializer_class(self):
         if self.action in ('create', 'partial_update'):
@@ -117,6 +120,7 @@ class TitleViewSet(viewsets.ModelViewSet):
 
 
 class ReviewViewSet(viewsets.ModelViewSet):
+    """Просмотр, создание, обновление и удаление отзывов к произведениям"""
     serializer_class = serializers.ReviewSerializer
     permission_classes = [IsAuthorOrStaffOrReadOnly]
 
@@ -130,10 +134,13 @@ class ReviewViewSet(viewsets.ModelViewSet):
         title_id = self.kwargs.get("title_id")
         title = get_object_or_404(Title, id=title_id)
         user = self.request.user
+        if Review.objects.filter(author=user, title=title).exists():
+            raise ValidationError('Нельзя отставлять больше одного тзыва к произведению')
         serializer.save(author=user, title=title)
 
 
 class CommentViewSet(viewsets.ModelViewSet):
+    """Просмотр, создание, обновление и удаление комментариев к отзывам"""
     serializer_class = serializers.CommentSerializer
     permission_classes = [IsAuthorOrStaffOrReadOnly]
 
