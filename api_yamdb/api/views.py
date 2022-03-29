@@ -97,11 +97,17 @@ class CategoryViewSet(mixins.ListModelMixin,
     lookup_field = 'slug'
 
 
-class GenreViewSet(CategoryViewSet):
+class GenreViewSet(mixins.ListModelMixin,
+                   mixins.CreateModelMixin,
+                   mixins.DestroyModelMixin,
+                   viewsets.GenericViewSet):
     """Возвращает список всех жанров, создает и удаляет жанры."""
     queryset = Genre.objects.all()
     serializer_class = serializers.GenreSerializer
+    permission_classes = [IsAdminOrReadOnly]
+    filter_backends = (filters.SearchFilter,)
     search_fields = ('name',)
+    lookup_field = 'slug'
 
 
 class TitleViewSet(viewsets.ModelViewSet):
