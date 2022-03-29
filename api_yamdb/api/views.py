@@ -23,13 +23,12 @@ User = get_user_model()
 
 class SignupAPIView(APIView):
     """Создает пользователя."""
-    serializer_class = serializers.SignupSerializer
 
     def post(self, request):
-        serializer = self.serializer_class(data=request.data)
+        serializer = serializers.SignupSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        username, user_email = serializer.validated_data['username'], serializer.validated_data['email']
+        username, user_email = serializer.data.get('username'), serializer.data.get('email')
         user = get_object_or_404(User, username=username)
         confirmation_code = default_token_generator.make_token(user)
         send_mail(
@@ -44,12 +43,11 @@ class SignupAPIView(APIView):
 
 class TokenAPIView(APIView):
     """Получение токена пользователем."""
-    serializer_class = serializers.TokenSerializer
 
     def post(self, request):
-        serializer = self.serializer_class(data=request.data)
+        serializer = serializers.TokenSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        username, confirmation_code = serializer.initial_data['username'], serializer.initial_data['confirmation_code']
+        username, confirmation_code = serializer.data.get('username'), serializer.data.get('confirmation_code')
         user = get_object_or_404(User, username=username)
         if default_token_generator.check_token(user, confirmation_code):
             token = AccessToken.for_user(user)
@@ -69,18 +67,15 @@ class UsersViewSet(viewsets.ModelViewSet):
 
 class MeAPIView(APIView):
     """Возвращает текущего пользователя."""
-    serializer_class = serializers.MeSerializer
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request):
-        user = self.request.user
-        serializer = self.serializer_class(user)
+        serializer = serializers.MeSerializer(self.request.user)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def patch(self, request):
-        user = self.request.user
-        serializer = self.serializer_class(
-            user,
+        serializer = serializers.MeSerializer(
+            self.request.user,
             data=request.data,
             partial=True
         )
