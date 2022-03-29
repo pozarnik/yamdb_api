@@ -1,8 +1,11 @@
+from django.contrib.auth import get_user_model
 from django.db.models import Avg
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 
-from reviews.models import User, Category, Genre, Title, Review, Comment
+from reviews.models import Category, Genre, Title, Review, Comment
+
+User = get_user_model()
 
 
 class SignupSerializer(serializers.ModelSerializer):
