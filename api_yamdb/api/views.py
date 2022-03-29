@@ -13,10 +13,10 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import AccessToken
 
+from api import serializers
+from api.filters import TitleFilter
+from api.permissions import IsAdmin, IsAdminOrReadOnly, IsAuthorOrStaffOrReadOnly
 from reviews.models import Category, Genre, Title, Review
-from . import serializers
-from .filters import TitleFilter
-from .permissions import IsAdmin, IsAdminOrReadOnly, IsAuthorOrStaffOrReadOnly
 
 User = get_user_model()
 
