@@ -6,7 +6,7 @@ from reviews.models import User, Category, Genre, Title, Review, Comment
 
 
 class SignupSerializer(serializers.ModelSerializer):
-    """Предназначен для создания пользователя"""
+    """Создает пользователя."""
     username = serializers.CharField(
         validators=[
             UniqueValidator(queryset=User.objects.all())
@@ -31,7 +31,7 @@ class SignupSerializer(serializers.ModelSerializer):
 
 
 class TokenSerializer(serializers.ModelSerializer):
-    """Прендназначен для получения токена пользователем"""
+    """Возвращает токен пользователя."""
     confirmation_code = serializers.CharField(max_length=255, read_only=True)
 
     class Meta:
@@ -40,7 +40,7 @@ class TokenSerializer(serializers.ModelSerializer):
 
 
 class UsersSerializer(SignupSerializer):
-    """Предназначен для отображения всех пользователей"""
+    """Возвращает список всех пользователей."""
 
     class Meta:
         model = User
@@ -48,7 +48,7 @@ class UsersSerializer(SignupSerializer):
 
 
 class MeSerializer(SignupSerializer):
-    """Предназначен для отображения текущего пользователя"""
+    """Возвращает текущего пользователя."""
 
     class Meta:
         model = User
@@ -57,7 +57,7 @@ class MeSerializer(SignupSerializer):
 
 
 class CategorySerializer(serializers.ModelSerializer):
-    """Предназначен для создания и просмотра категорий"""
+    """Возвращает список всех категорий, создает и удаляет категории."""
 
     class Meta:
         model = Category
@@ -66,7 +66,7 @@ class CategorySerializer(serializers.ModelSerializer):
 
 
 class GenreSerializer(serializers.ModelSerializer):
-    """Предназначен для создания и просмотра жанров"""
+    """Возвращает список всех жанров, создает и удаляет жанры."""
 
     class Meta:
         model = Genre
@@ -75,7 +75,7 @@ class GenreSerializer(serializers.ModelSerializer):
 
 
 class TitleCreateSerializer(serializers.ModelSerializer):
-    """Предназначен для создания произведения"""
+    """Создает произведения."""
     category = serializers.SlugRelatedField(
         slug_field='slug',
         queryset=Category.objects.all()
@@ -92,7 +92,7 @@ class TitleCreateSerializer(serializers.ModelSerializer):
 
 
 class TitleSerializer(serializers.ModelSerializer):
-    """Предназначен для отображения произведений"""
+    """Возвращает список всех произведений, обновляет и удаляет произведения."""
     category = CategorySerializer()
     genre = GenreSerializer(many=True)
     rating = serializers.SerializerMethodField()
@@ -110,7 +110,7 @@ class TitleSerializer(serializers.ModelSerializer):
 
 
 class ReviewSerializer(serializers.ModelSerializer):
-    """Предназначен для создания и просмотра отзывов к произведениям"""
+    """Возвращает список всех отзывов, создает, обновляет и удаляет отзывы к произведениям."""
     author = serializers.StringRelatedField(
         read_only=True, default=serializers.CurrentUserDefault())
 
@@ -121,7 +121,7 @@ class ReviewSerializer(serializers.ModelSerializer):
 
 
 class CommentSerializer(serializers.ModelSerializer):
-    """Предназначен для создания и просмотра комментариев к отзывам на произведения"""
+    """Возвращает список всех комментариев, создает, обновляет и удаляет комментарии к отзывам."""
     author = serializers.StringRelatedField(
         read_only=True, default=serializers.CurrentUserDefault())
 
