@@ -19,7 +19,7 @@ from .permissions import IsAdmin, IsAdminOrReadOnly, IsAuthorOrStaffOrReadOnly
 
 
 class SignupAPIView(APIView):
-    """Создает пользователя"""
+    """Создает пользователя."""
     serializer_class = serializers.SignupSerializer
 
     def post(self, request):
@@ -40,7 +40,7 @@ class SignupAPIView(APIView):
 
 
 class TokenAPIView(APIView):
-    """Получение токена пользователем"""
+    """Получение токена пользователем."""
     serializer_class = serializers.TokenSerializer
 
     def post(self, request):
@@ -55,7 +55,7 @@ class TokenAPIView(APIView):
 
 
 class UsersViewSet(viewsets.ModelViewSet):
-    """Отображение всех пользователей"""
+    """Возвращает список всех пользователей."""
     queryset = User.objects.all()
     serializer_class = serializers.UsersSerializer
     permission_classes = [IsAdmin]
@@ -65,7 +65,7 @@ class UsersViewSet(viewsets.ModelViewSet):
 
 
 class MeAPIView(APIView):
-    """Отображение профиля текущего пользователя"""
+    """Возвращает текущего пользователя."""
     serializer_class = serializers.MeSerializer
     permission_classes = [permissions.IsAuthenticated]
 
@@ -90,7 +90,7 @@ class CategoryViewSet(mixins.ListModelMixin,
                       mixins.CreateModelMixin,
                       mixins.DestroyModelMixin,
                       viewsets.GenericViewSet):
-    """Просмотр, создание и удаление категорий"""
+    """Возвращает список всех категорий, создает и удаляет категории."""
     queryset = Category.objects.all()
     serializer_class = serializers.CategorySerializer
     permission_classes = [IsAdminOrReadOnly]
@@ -100,14 +100,14 @@ class CategoryViewSet(mixins.ListModelMixin,
 
 
 class GenreViewSet(CategoryViewSet):
-    """Просмотр, создание и удаление жанров"""
+    """Возвращает список всех жанров, создает и удаляет жанры."""
     queryset = Genre.objects.all()
     serializer_class = serializers.GenreSerializer
     search_fields = ('name',)
 
 
 class TitleViewSet(viewsets.ModelViewSet):
-    """Просмотр, создание, обновление и удаление произведений"""
+    """Возвращает список всех произведений, создает, обновляет и удаляет произведения."""
     queryset = Title.objects.all()
     permission_classes = [IsAdminOrReadOnly]
     filter_backends = (DjangoFilterBackend,)
@@ -120,7 +120,7 @@ class TitleViewSet(viewsets.ModelViewSet):
 
 
 class ReviewViewSet(viewsets.ModelViewSet):
-    """Просмотр, создание, обновление и удаление отзывов к произведениям"""
+    """Возвращает список всех отзывов, создает, обновляет и удаляет отзывы к произведениям."""
     serializer_class = serializers.ReviewSerializer
     permission_classes = [IsAuthorOrStaffOrReadOnly]
 
@@ -135,12 +135,12 @@ class ReviewViewSet(viewsets.ModelViewSet):
         title = get_object_or_404(Title, id=title_id)
         user = self.request.user
         if Review.objects.filter(author=user, title=title).exists():
-            raise ValidationError('Нельзя отставлять больше одного тзыва к произведению')
+            raise ValidationError('Нельзя отставлять больше одного отзыва к произведению')
         serializer.save(author=user, title=title)
 
 
 class CommentViewSet(viewsets.ModelViewSet):
-    """Просмотр, создание, обновление и удаление комментариев к отзывам"""
+    """Возвращает список всех комментариев, создает, обновляет и удаляет комментарии к отзывам."""
     serializer_class = serializers.CommentSerializer
     permission_classes = [IsAuthorOrStaffOrReadOnly]
 
