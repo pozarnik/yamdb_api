@@ -4,7 +4,7 @@ from django.db import models
 
 
 class User(AbstractUser):
-    """Содержит пользователей"""
+    """Содержит пользователей."""
     ROLE_CHOICES = (
         ('users', 'users'),
         ('moderator', 'moderator'),
@@ -37,7 +37,7 @@ class User(AbstractUser):
 
 
 class Category(models.Model):
-    """Содержит категории произведений"""
+    """Содержит категории произведений."""
     name = models.CharField(verbose_name='название категории', max_length=256)
     slug = models.SlugField(verbose_name='сокращение категории', unique=True, max_length=50)
 
@@ -51,7 +51,7 @@ class Category(models.Model):
 
 
 class Genre(models.Model):
-    """Содержит жанры произведений"""
+    """Содержит жанры произведений."""
     name = models.CharField(verbose_name='название жанра', max_length=256)
     slug = models.SlugField(verbose_name='сокращение жанра', unique=True, max_length=50)
 
@@ -65,7 +65,7 @@ class Genre(models.Model):
 
 
 class Title(models.Model):
-    """Содержит произведения"""
+    """Содержит произведения."""
     name = models.TextField(verbose_name='произведение')
     year = models.PositiveSmallIntegerField(
         validators=[
@@ -78,7 +78,6 @@ class Title(models.Model):
     genre = models.ManyToManyField(
         Genre,
         related_name='titles',
-        null=True,
         verbose_name='жанр'
     )
     category = models.ForeignKey(
@@ -99,7 +98,7 @@ class Title(models.Model):
 
 
 class Review(models.Model):
-    """Содержит обзоры на произведения"""
+    """Содержит обзоры на произведения."""
     text = models.TextField(verbose_name='текст отзыва')
     title = models.ForeignKey(
         Title,
@@ -133,7 +132,7 @@ class Review(models.Model):
 
 
 class Comment(models.Model):
-    """Содержит комментарии к отзывам"""
+    """Содержит комментарии к отзывам."""
     text = models.TextField(verbose_name='текст комментария')
     author = models.ForeignKey(
         User,
