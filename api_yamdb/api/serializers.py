@@ -42,21 +42,55 @@ class TokenSerializer(serializers.ModelSerializer):
         fields = ('username', 'confirmation_code')
 
 
-class UsersSerializer(SignupSerializer):
-    """Возвращает список всех пользователей."""
+class UsersSerializer(serializers.ModelSerializer):
+    """Возвращает список всех пользователей, создает пользователя админом."""
+    username = serializers.CharField(
+        validators=[
+            UniqueValidator(queryset=User.objects.all())
+        ],
+        required=True,
+    )
+    email = serializers.EmailField(
+        validators=[
+            UniqueValidator(queryset=User.objects.all())
+        ],
+        required=True,
+    )
 
     class Meta:
         model = User
         fields = ('username', 'email', 'first_name', 'last_name', 'bio', 'role')
 
+    def validate_username(self, value):
+        if value == 'me':
+            raise serializers.ValidationError('Нельзя использовать имя <me>!')
+        return value
 
-class MeSerializer(SignupSerializer):
+
+class MeSerializer(serializers.ModelSerializer):
     """Возвращает текущего пользователя."""
+    username = serializers.CharField(
+        validators=[
+            UniqueValidator(queryset=User.objects.all())
+        ],
+        required=True,
+    )
+    email = serializers.EmailField(
+        validators=[
+            UniqueValidator(queryset=User.objects.all())
+        ],
+        required=True,
+    )
 
     class Meta:
         model = User
         fields = ('username', 'email', 'first_name', 'last_name', 'bio', 'role')
         read_only_fields = ('role',)
+
+    def validate_username(self, value):
+        if value == 'me':
+            raise serializers.ValidationError('Нельзя использовать имя <me>!')
+        return value
 
 
 class CategorySerializer(serializers.ModelSerializer):
