@@ -17,9 +17,13 @@ router.register(
     basename='comments'
 )
 
+auth_patterns = ([
+                     path('signup/', views.SignupAPIView.as_view(), name='signup'),
+                     path('token/', views.TokenAPIView.as_view(), name='token'),
+                 ], 'auth')
+
 urlpatterns = [
-    path('auth/signup/', views.SignupAPIView.as_view(), name='signup'),
-    path('auth/token/', views.TokenAPIView.as_view(), name='token'),
+    path('auth/', include(auth_patterns), name='auth'),
     path('users/me/', views.MeAPIView.as_view(), name='current_user'),
     path('', include(router.urls), name='api-root'),
 ]
