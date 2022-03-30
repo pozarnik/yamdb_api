@@ -28,7 +28,8 @@ class SignupAPIView(APIView):
         serializer = serializers.SignupSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        username, user_email = serializer.data.get('username'), serializer.data.get('email')
+        username = serializer.data.get('username')
+        user_email = serializer.data.get('email')
         user = get_object_or_404(User, username=username)
         confirmation_code = default_token_generator.make_token(user)
         send_mail(
@@ -47,7 +48,8 @@ class TokenAPIView(APIView):
     def post(self, request):
         serializer = serializers.TokenSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        username, confirmation_code = serializer.data.get('username'), serializer.data.get('confirmation_code')
+        username = serializer.data.get('username')
+        confirmation_code = serializer.data.get('confirmation_code')
         user = get_object_or_404(User, username=username)
         if default_token_generator.check_token(user, confirmation_code):
             token = AccessToken.for_user(user)
