@@ -1,5 +1,4 @@
 from django.contrib.auth import get_user_model
-from django.db.models import Avg
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 
@@ -132,18 +131,11 @@ class TitleSerializer(serializers.ModelSerializer):
     """Возвращает список всех произведений, обновляет и удаляет произведения."""
     category = CategorySerializer()
     genre = GenreSerializer(many=True)
-    rating = serializers.SerializerMethodField()
+    rating = serializers.IntegerField()
 
     class Meta:
         model = Title
         fields = '__all__'
-
-    def get_rating(self, obj):
-        try:
-            rating = obj.reviews.aggregate(Avg('score'))
-            return rating.get('score__avg')
-        except TypeError:
-            return None
 
 
 class ReviewSerializer(serializers.ModelSerializer):
