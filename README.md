@@ -49,7 +49,7 @@ python manage.py migrate
 python manage.py runserver
 ```
 
-## Документациии проекта
+## Документации проекта
 
 Запустите сервер и перейдите по адресу
 
