@@ -6,7 +6,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 def create_users_api(admin_client):
     data = {
         'username': 'TestUser',
-        'role': 'users',
+        'role': 'user',
         'email': 'testuser@yamdb.fake'
     }
     admin_client.post('/api/v1/users/', data=data)
