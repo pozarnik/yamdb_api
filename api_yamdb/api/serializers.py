@@ -1,6 +1,5 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
-from rest_framework.validators import UniqueValidator
 
 from reviews.models import Category, Genre, Title, Review, Comment
 
@@ -9,18 +8,6 @@ User = get_user_model()
 
 class SignupSerializer(serializers.ModelSerializer):
     """Создает пользователя."""
-    username = serializers.CharField(
-        validators=[
-            UniqueValidator(queryset=User.objects.all())
-        ],
-        required=True,
-    )
-    email = serializers.EmailField(
-        validators=[
-            UniqueValidator(queryset=User.objects.all())
-        ],
-        required=True,
-    )
 
     class Meta:
         model = User
@@ -43,18 +30,6 @@ class TokenSerializer(serializers.ModelSerializer):
 
 class UsersSerializer(serializers.ModelSerializer):
     """Возвращает список всех пользователей, создает пользователя админом."""
-    username = serializers.CharField(
-        validators=[
-            UniqueValidator(queryset=User.objects.all())
-        ],
-        required=True,
-    )
-    email = serializers.EmailField(
-        validators=[
-            UniqueValidator(queryset=User.objects.all())
-        ],
-        required=True,
-    )
 
     class Meta:
         model = User
@@ -68,18 +43,6 @@ class UsersSerializer(serializers.ModelSerializer):
 
 class MeSerializer(serializers.ModelSerializer):
     """Возвращает текущего пользователя."""
-    username = serializers.CharField(
-        validators=[
-            UniqueValidator(queryset=User.objects.all())
-        ],
-        required=True,
-    )
-    email = serializers.EmailField(
-        validators=[
-            UniqueValidator(queryset=User.objects.all())
-        ],
-        required=True,
-    )
 
     class Meta:
         model = User
