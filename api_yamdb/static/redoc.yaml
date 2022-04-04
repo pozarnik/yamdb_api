@@ -555,7 +555,7 @@ paths:
           description: Произведение не найдено
       security:
       - jwt-token:
-        - write:users,moderator,admin
+        - write:user,moderator,admin
   /titles/{title_id}/reviews/{review_id}/:
     parameters:
       - name: title_id
@@ -621,7 +621,7 @@ paths:
           description: Произведение не найдено
       security:
       - jwt-token:
-        - write:users,moderator,admin
+        - write:user,moderator,admin
     delete:
       tags:
         - REVIEWS
@@ -641,7 +641,7 @@ paths:
           description: Произведение или отзыв не найдены
       security:
       - jwt-token:
-        - write:users,moderator,admin
+        - write:user,moderator,admin
 
   /titles/{title_id}/reviews/{review_id}/comments/:
     parameters:
@@ -719,7 +719,7 @@ paths:
           description: Не найдено произведение или отзыв
       security:
       - jwt-token:
-        - write:users,moderator,admin
+        - write:user,moderator,admin
 
   /titles/{title_id}/reviews/{review_id}/comments/{comment_id}/:
     parameters:
@@ -792,7 +792,7 @@ paths:
           description: Не найдено произведение, отзыв или комментарий
       security:
       - jwt-token:
-        - write:users,moderator,admin
+        - write:user,moderator,admin
     delete:
       tags:
         - COMMENTS
@@ -812,7 +812,7 @@ paths:
           description: Не найдено произведение, отзыв или комментарий
       security:
       - jwt-token:
-        - write:users,moderator,admin
+        - write:user,moderator,admin
 
   /users/:
     get:
@@ -997,7 +997,7 @@ paths:
                 $ref: '#/components/schemas/User'
       security:
       - jwt-token:
-        - read:admin,moderator,users
+        - read:admin,moderator,user
     patch:
       tags:
         - USERS
@@ -1028,7 +1028,7 @@ paths:
                 $ref: '#/components/schemas/ValidationError'
       security:
       - jwt-token:
-        - write:admin,moderator,users
+        - write:admin,moderator,user
 
 components:
   schemas:
@@ -1061,9 +1061,9 @@ components:
           type: string
         role:
           type: string
-          description: Администратор, модератор или пользователь. По умолчанию `users`.
+          description: Администратор, модератор или пользователь. По умолчанию `user`.
           enum:
-            - users
+            - user
             - moderator
             - admin
 
@@ -1222,7 +1222,7 @@ components:
           enum:
           - admin
           - moderator
-          - users
+          - user
           type: string
           readOnly: true
         email:
