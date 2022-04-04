@@ -26,22 +26,30 @@ User = get_user_model()
 class SignupAPIView(APIView):
     """Создает пользователя."""
 
-    def post(self, request):
-        serializer = serializers.SignupSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        username = serializer.data.get('username')
-        user_email = serializer.data.get('email')
+    def send_email(self, username, email):
         user = get_object_or_404(User, username=username)
         confirmation_code = default_token_generator.make_token(user)
         send_mail(
-            f'Активация учетной записи {username}',
-            f'Код подтверждения {confirmation_code}',
+            f'Activation',
+            f'{username}, Ваш код подтверждения {confirmation_code}',
             settings.EMAIL_HOST_USER,
-            [user_email],
+            [email],
             fail_silently=False,
         )
-        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def post(self, request):
+        serializer = serializers.SignupSerializer(data=request.data)
+        username = serializer.initial_data.get('username')
+        user_email = serializer.initial_data.get('email')
+        if User.objects.filter(username=username, email=user_email).exists():
+            self.send_email(username, user_email)
+            return Response(serializer.initial_data, status=status.HTTP_200_OK)
+        elif serializer.is_valid(raise_exception=True):
+            serializer.save()
+            self.send_email(username, user_email)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class LoginAPIView(APIView):
@@ -56,7 +64,7 @@ class LoginAPIView(APIView):
         if default_token_generator.check_token(user, confirmation_code):
             token = AccessToken.for_user(user)
             return Response({"token": str(token)}, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"confirmation_code": 'Введен неверный код!'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class UsersViewSet(viewsets.ModelViewSet):
@@ -122,9 +130,9 @@ class TitleViewSet(viewsets.ModelViewSet):
     filterset_class = TitleFilter
 
     def get_serializer_class(self):
-        if self.action in ('list', 'retrieve'):
-            return serializers.TitleSerializer
-        return serializers.TitleCreateSerializer
+        if self.action in ('create', 'partial_update'):
+            return serializers.TitleCreateSerializer
+        return serializers.TitleSerializer
 
     def get_queryset(self):
         return Title.objects.annotate(rating=Avg('reviews__score')).order_by('name')
