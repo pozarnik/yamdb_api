@@ -1,6 +1,6 @@
 from django.contrib.auth.models import AbstractUser
-from django.core.validators import MaxValueValidator, MinValueValidator
 from django.core.exceptions import ValidationError
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
 
@@ -89,10 +89,6 @@ class Title(models.Model):
         verbose_name='категория'
     )
 
-    def clean(self):
-        if 0 <= self.year <= 2022:
-            raise ValidationError(('Неверно указан год произведения!'))
-
     class Meta:
         ordering = ['name']
         verbose_name = 'Произведение'
@@ -100,6 +96,10 @@ class Title(models.Model):
 
     def __str__(self):
         return self.name
+
+    def clean(self):
+        if 0 <= self.year <= 2022:
+            raise ValidationError(('Неверно указан год произведения!'))
 
 
 class Review(models.Model):
