@@ -46,7 +46,7 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'api_yamdb.urls'
 
-TEMPLATES_DIR = BASE_DIR.joinpath('templates')
+TEMPLATES_DIR = BASE_DIR / 'templates'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -70,7 +70,7 @@ WSGI_APPLICATION = 'api_yamdb.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': str(BASE_DIR / "db.sqlite3"),
+        'NAME': str(BASE_DIR / 'db.sqlite3'),
     }
 }
 
@@ -107,11 +107,11 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-STATICFILES_DIRS = (BASE_DIR.joinpath('static/'),)
+STATICFILES_DIRS = (BASE_DIR / 'static/',)
 
 EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
 
-EMAIL_FILE_PATH = BASE_DIR.joinpath('sent_emails')
+EMAIL_FILE_PATH = BASE_DIR / 'sent_emails'
 
 AUTH_USER_MODEL = 'reviews.User'
 
