@@ -17,6 +17,7 @@ from rest_framework_simplejwt.tokens import AccessToken
 from api import serializers
 from api.filters import TitleFilter
 from api.permissions import IsAdmin, IsAdminOrReadOnly, IsAuthorOrStaffOrReadOnly
+from api_yamdb import settings
 from reviews.models import Category, Genre, Title, Review
 
 User = get_user_model()
@@ -36,7 +37,7 @@ class SignupAPIView(APIView):
         send_mail(
             f'Активация учетной записи {username}',
             f'Код подтверждения {confirmation_code}',
-            'from@example.com',
+            settings.EMAIL_HOST_USER,
             [user_email],
             fail_silently=False,
         )
