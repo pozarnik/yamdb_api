@@ -4,10 +4,11 @@ from django.db import models
 
 
 class User(AbstractUser):
+    """Содержит пользователей."""
     USER = 'user'
     MODERATOR = 'moderator'
     ADMIN = 'admin'
-    """Содержит пользователей."""
+
     ROLE_CHOICES = (
         (USER, 'user'),
         (MODERATOR, 'moderator'),
