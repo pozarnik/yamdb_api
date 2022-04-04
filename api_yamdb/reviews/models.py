@@ -6,14 +6,14 @@ from django.db import models
 class User(AbstractUser):
     """Содержит пользователей."""
     ROLE_CHOICES = (
-        ('users', 'users'),
+        ('user', 'user'),
         ('moderator', 'moderator'),
         ('admin', 'admin'),
     )
     username = models.CharField(verbose_name='никнейм', max_length=150, unique=True, db_index=True)
     email = models.EmailField(verbose_name='email', max_length=254, unique=True)
     bio = models.TextField(verbose_name='биография', null=True)
-    role = models.CharField(verbose_name='роль', max_length=10, choices=ROLE_CHOICES, default='users')
+    role = models.CharField(verbose_name='роль', max_length=10, choices=ROLE_CHOICES, default='user')
 
     def get_role(self, obj):
         if self.is_superuser:
