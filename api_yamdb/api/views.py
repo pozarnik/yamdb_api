@@ -122,9 +122,9 @@ class TitleViewSet(viewsets.ModelViewSet):
     filterset_class = TitleFilter
 
     def get_serializer_class(self):
-        if self.action in ('create', 'partial_update'):
-            return serializers.TitleCreateSerializer
-        return serializers.TitleSerializer
+        if self.action in ('list', 'retrieve'):
+            return serializers.TitleSerializer
+        return serializers.TitleCreateSerializer
 
     def get_queryset(self):
         return Title.objects.annotate(rating=Avg('reviews__score')).order_by('name')
