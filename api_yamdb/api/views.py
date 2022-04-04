@@ -44,11 +44,11 @@ class SignupAPIView(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-class TokenAPIView(APIView):
+class LoginAPIView(APIView):
     """Получение токена пользователем."""
 
     def post(self, request):
-        serializer = serializers.TokenSerializer(data=request.data)
+        serializer = serializers.LoginSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         username = serializer.data.get('username')
         confirmation_code = serializer.data.get('confirmation_code')

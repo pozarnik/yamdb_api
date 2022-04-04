@@ -19,7 +19,7 @@ router.register(
 
 auth_patterns = ([
                      path('signup/', views.SignupAPIView.as_view(), name='signup'),
-                     path('token/', views.TokenAPIView.as_view(), name='token'),
+                     path('token/', views.LoginAPIView.as_view(), name='login'),
                  ], 'auth')
 
 urlpatterns = [

@@ -19,7 +19,7 @@ class SignupSerializer(serializers.ModelSerializer):
         return value
 
 
-class TokenSerializer(serializers.ModelSerializer):
+class LoginSerializer(serializers.ModelSerializer):
     """Возвращает токен пользователя."""
     confirmation_code = serializers.CharField(max_length=255, read_only=True)
 
