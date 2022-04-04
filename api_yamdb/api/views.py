@@ -124,7 +124,7 @@ class GenreViewSet(mixins.ListModelMixin,
 
 class TitleViewSet(viewsets.ModelViewSet):
     """Возвращает список всех произведений, создает, обновляет и удаляет произведения."""
-    queryset = Title.objects.all()
+    queryset = Title.objects.annotate(rating=Avg('reviews__score')).order_by('name')
     permission_classes = [IsAdminOrReadOnly]
     filter_backends = (DjangoFilterBackend,)
     filterset_class = TitleFilter
@@ -133,9 +133,6 @@ class TitleViewSet(viewsets.ModelViewSet):
         if self.action in ('create', 'partial_update'):
             return serializers.TitleCreateSerializer
         return serializers.TitleSerializer
-
-    def get_queryset(self):
-        return Title.objects.annotate(rating=Avg('reviews__score')).order_by('name')
 
 
 class ReviewViewSet(viewsets.ModelViewSet):
