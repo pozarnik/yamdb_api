@@ -1,5 +1,4 @@
 from django.contrib.auth.models import AbstractUser
-from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
@@ -11,9 +10,9 @@ class User(AbstractUser):
     ADMIN = 'admin'
 
     ROLE_CHOICES = (
-        (USER, 'user'),
-        (MODERATOR, 'moderator'),
-        (ADMIN, 'admin'),
+        (USER, 'пользователь'),
+        (MODERATOR, 'модератор'),
+        (ADMIN, 'администратор'),
     )
     username = models.CharField(verbose_name='никнейм', max_length=150, unique=True, db_index=True)
     email = models.EmailField(verbose_name='email', max_length=254, unique=True)
@@ -70,8 +69,8 @@ class Title(models.Model):
     name = models.TextField(verbose_name='произведение')
     year = models.PositiveSmallIntegerField(
         validators=[
-            MinValueValidator(0),
-            MaxValueValidator(2022)
+            MinValueValidator(0, 'Год произведения не может быть отрицательным!'),
+            MaxValueValidator(2022, 'Нельзя публиковать произведения из будущего!')
         ],
         verbose_name='год'
     )
@@ -97,10 +96,6 @@ class Title(models.Model):
     def __str__(self):
         return self.name
 
-    def clean(self):
-        if 0 <= self.year <= 2022:
-            raise ValidationError(('Неверно указан год произведения!'))
-
 
 class Review(models.Model):
     """Содержит обзоры на произведения."""
@@ -119,8 +114,8 @@ class Review(models.Model):
     )
     score = models.PositiveSmallIntegerField(
         validators=[
-            MinValueValidator(0),
-            MaxValueValidator(10)
+            MinValueValidator(1, 'Оценка не может быть меньше 1!'),
+            MaxValueValidator(10, 'Оценка не может быть больше 10!')
         ],
         verbose_name='оценка произведения'
     )
