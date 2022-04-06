@@ -26,14 +26,13 @@ User = get_user_model()
 class SignupAPIView(APIView):
     """Создает пользователя."""
 
-    def send_email(self, username, email):
-        user = get_object_or_404(User, username=username)
+    def __send_email(self, user):
         confirmation_code = default_token_generator.make_token(user)
         send_mail(
             f'Activation',
-            f'{username}, Ваш код подтверждения {confirmation_code}',
+            f'{user.username}, Ваш код подтверждения {confirmation_code}',
             settings.EMAIL_HOST_USER,
-            [email],
+            [user.email],
             fail_silently=False,
         )
 
@@ -41,13 +40,14 @@ class SignupAPIView(APIView):
         serializer = serializers.SignupSerializer(data=request.data)
         username = serializer.initial_data.get('username')
         user_email = serializer.initial_data.get('email')
-        if User.objects.filter(username=username, email=user_email).exists():
-            self.send_email(username, user_email)
-            return Response(serializer.initial_data, status=status.HTTP_200_OK)
-        elif serializer.is_valid(raise_exception=True):
-            serializer.save()
-            self.send_email(username, user_email)
+        if serializer.is_valid():
+            new_user = serializer.save()
+            self.__send_email(new_user)
             return Response(serializer.data, status=status.HTTP_200_OK)
+        elif User.objects.filter(username=username, email=user_email).exists():
+            user = get_object_or_404(User, username=username)
+            self.__send_email(user)
+            return Response(serializer.initial_data, status=status.HTTP_200_OK)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
