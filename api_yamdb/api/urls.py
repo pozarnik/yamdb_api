@@ -17,10 +17,10 @@ router.register(
     basename='comments'
 )
 
-auth_patterns = ([
-                     path('signup/', views.SignupAPIView.as_view(), name='signup'),
-                     path('token/', views.LoginAPIView.as_view(), name='login'),
-                 ], 'auth')
+auth_patterns = [
+    path('signup/', views.SignupAPIView.as_view(), name='signup'),
+    path('token/', views.LoginAPIView.as_view(), name='login'),
+]
 
 urlpatterns = [
     path('auth/', include(auth_patterns), name='auth'),
