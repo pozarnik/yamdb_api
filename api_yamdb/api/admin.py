@@ -55,6 +55,7 @@ class ReviewAdmin(admin.ModelAdmin):
         'score',
         'pub_date',
     )
+    readonly_fields = ('author',)
     search_fields = ('text',)
     list_filter = ('pub_date',)
     empty_value_display = '-пусто-'
@@ -68,6 +69,7 @@ class CommentAdmin(admin.ModelAdmin):
         'pub_date',
         'review'
     )
+    readonly_fields = ('author',)
     search_fields = ('text',)
     list_filter = ('pub_date',)
     empty_value_display = '-пусто-'
