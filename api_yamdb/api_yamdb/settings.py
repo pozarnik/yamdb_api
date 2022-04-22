@@ -109,10 +109,6 @@ STATIC_URL = '/static/'
 
 STATICFILES_DIRS = (BASE_DIR / 'static/',)
 
-EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
-
-EMAIL_FILE_PATH = str(BASE_DIR / 'sent_emails')
-
 AUTH_USER_MODEL = 'reviews.User'
 
 REST_FRAMEWORK = {
@@ -141,6 +137,10 @@ SWAGGER_SETTINGS = {
         }
     }
 }
+
+if DEBUG:
+    EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
+    EMAIL_FILE_PATH = str(BASE_DIR / 'sent_emails')
 
 EMAIL_USE_TLS = True
 EMAIL_HOST = os.getenv('EMAIL_HOST')

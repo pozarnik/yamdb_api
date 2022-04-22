@@ -2,6 +2,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
 from django.db.models import Avg
+from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters
@@ -38,18 +39,21 @@ class SignupAPIView(APIView):
 
     def post(self, request):
         serializer = serializers.SignupSerializer(data=request.data)
-        username = serializer.initial_data.get('username')
-        user_email = serializer.initial_data.get('email')
-        if serializer.is_valid():
-            new_user = serializer.save()
-            self.__send_email(new_user)
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        elif User.objects.filter(username=username, email=user_email).exists():
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        serializer.is_valid()
+        username = serializer.validated_data.get('username')
+        user_email = serializer.validated_data.get('email')
+        if User.objects.filter(username=username, email=user_email).exists():
             user = get_object_or_404(User, username=username)
             self.__send_email(user)
-            return Response(serializer.initial_data, status=status.HTTP_200_OK)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        elif User.objects.filter(Q(username=username) | Q(email=user_email)).exists():
+            return Response({"Данный username либо email уже используется"}, status=status.HTTP_400_BAD_REQUEST)
         else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            new_user = User.objects.create(username=username, email=user_email)
+            self.__send_email(new_user)
+            return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class LoginAPIView(APIView):
