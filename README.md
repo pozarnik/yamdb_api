@@ -10,12 +10,12 @@
 - Добавление различных жанров и категорий произведений
 - Добавление произведений, с возможностью выбора категории и нескольких жанров
 - Публикация отзывов к произведениям
-- Комментарии к отзывам на произведения
+- Публикация комментариев к отзывам
 
 ## Технологии
 
 - Python 3.9
-- Django 2.2.16
+- Django 3.2
 - Django REST framework 3.12.4
 - etc.
 
@@ -72,7 +72,7 @@ http://127.0.0.1:8000/swagger/
 ## Мои профили
 
 - [GitHub](https://github.com/pozarnik/)
-- [LinkedIn](https://www.linkedin.com/in/pozarnik/)
+- [LinkedIn](https://linkedin.com/in/pozarnik/)
 
 ## License
 
