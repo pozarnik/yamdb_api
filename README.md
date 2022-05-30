@@ -24,8 +24,8 @@
 Скопируйте проект и создайте виртуальное окружение
 
 ```sh
-git clone https://github.com/pozarnik/api_yamdb.git
-cd api_yamdb
+git clone https://github.com/pozarnik/yamdb_api.git
+cd yamdb_api
 python -m venv venv
 ```
 
