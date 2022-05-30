@@ -73,7 +73,6 @@ http://127.0.0.1:8000/swagger/
 
 - [GitHub](https://github.com/pozarnik/)
 - [LinkedIn](https://www.linkedin.com/in/alekseyevich-ivan/)
-- 
 
 ## License
 
